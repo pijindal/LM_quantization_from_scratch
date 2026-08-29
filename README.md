@@ -4,7 +4,9 @@ Implementing INT8 and INT4 weight quantization for a transformer language model 
 
 ![Quantization tradeoff: perplexity vs memory](quantization_tradeoff.png)
 
-The plot above is the whole project in one glance: **lower left is better** (small **and** accurate). The headline finding is the vertical gap between the two INT8 points, same bits and same size but wildly different quality, and the fact that a well-designed 4-bit model beats a naive 8-bit one with the group size determining its own tradeoffs.
+The plot above is the whole project in one glance: **lower left is better** (small **and** accurate). 
+
+The headline finding is the vertical gap between the two INT8 points, same bits and same size, but widely different quality and the fact that a well designed 4-bit model beats a naive 8-bit one with the group size determining its own tradeoffs.
 
 ---
 
@@ -71,10 +73,10 @@ Two quantization types differ in how `S` and `Z` are set:
 
 ### Symmetric quantization
 
-Symmetric quantization restricts the zero-point to always equal zero (`Z = 0`), so the range is always centred on 0. The float range is found from the absolute maximum value in the tensor, `|x|_max`:
+Symmetric quantization restricts the zero-point to always equal zero (`Z = 0`), so the range is always centred on 0. The float range is found from the absolute maximum value in the tensor, `|x|_max` making the scale:
 
-float range width = |x|_max − (−|x|_max) = 2 · |x|_max
-S = |x|_max / q_max          # q_max = 127 for INT8, 7 for INT4 (signed)
+S = |x|_max / q_max          
+(q_max = 127 for INT8, 7 for INT4 (signed))
 
 Standard symmetric quantization maps to a balanced range `[−q_max, q_max]` (dividing by `q_max` to keep zero perfectly centred). Symmetric is the standard choice for weight tensors because it makes the arithmetic simple, increasing speed and cutting the memory overhead the zero point would otherwise add.
 
